@@ -34,6 +34,13 @@ model Kelas {
   nama_kelas  String
 }
 
+model Headerweb {
+  id Int @id @default(autoincrement())
+  msgWelcome String?
+  Banner String?
+  tahun_ajaran String?
+}
+
 model Jurnal {
   id              String   @id @default(uuid())
   namaGuru        String?
@@ -44,7 +51,6 @@ model Jurnal {
   statusKehadiran String
   materi          String
   kegiatan        String // simpan JSON string seperti: '["Diskusi","Latihan Soal"]'
-  lainnyaKegiatan String?
   siswaHadir      Int
   siswaTidakHadir Int
   buktiFoto       String?
