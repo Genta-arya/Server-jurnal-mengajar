@@ -1,0 +1,54 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(uuid())
+  name         String?
+  password     String
+  status_login Boolean  @default(false)
+  avatar       String?
+  token        String?
+  createdAt    DateTime @default(now())
+  jurnal       Jurnal[]
+}
+
+model Mapel {
+  id         String  @id @default(uuid())
+  nama_mapel String?
+}
+
+model Kelas {
+  id          Int    @id @default(autoincrement())
+  nama_kelas  String
+}
+
+model Jurnal {
+  id              String   @id @default(uuid())
+  namaGuru        String?
+  tanggalMengajar DateTime
+  mataPelajaran   String
+  kelas           String
+  jamKe           String // simpan JSON string seperti: '["1","2","3"]'
+  statusKehadiran String
+  materi          String
+  kegiatan        String // simpan JSON string seperti: '["Diskusi","Latihan Soal"]'
+  lainnyaKegiatan String?
+  siswaHadir      Int
+  siswaTidakHadir Int
+  buktiFoto       String?
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+}
