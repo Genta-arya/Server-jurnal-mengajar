@@ -14,14 +14,23 @@ datasource db {
 }
 
 model User {
-  id           String   @id @default(uuid())
+  id   String  @id @default(uuid())
+  name String?
+
+  createdAt DateTime @default(now())
+  jurnal    Jurnal[]
+}
+
+model Admin {
+  id           String  @id @default(uuid())
   name         String?
+  username     String
   password     String
-  status_login Boolean  @default(false)
+  status_login Boolean @default(false)
   avatar       String?
-  token        String?
-  createdAt    DateTime @default(now())
-  jurnal       Jurnal[]
+  role      String   @default("admin")
+  token     String?  @db.Text
+  createdAt DateTime @default(now())
 }
 
 model Mapel {
@@ -29,15 +38,21 @@ model Mapel {
   nama_mapel String?
 }
 
+model Kegiatan {
+  id         String  @id @default(uuid())
+  nama_kegiatan String?
+}
+
+
 model Kelas {
-  id          Int    @id @default(autoincrement())
-  nama_kelas  String
+  id         Int    @id @default(autoincrement())
+  nama_kelas String
 }
 
 model Headerweb {
-  id Int @id @default(autoincrement())
-  msgWelcome String?
-  Banner String?
+  id           Int     @id @default(autoincrement())
+  msgWelcome   String?
+  Banner       String?
   tahun_ajaran String?
 }
 
