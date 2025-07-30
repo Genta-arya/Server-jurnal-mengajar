@@ -1,7 +1,7 @@
 import { prisma } from "../Config/Prisma.js";
 import { createToken } from "../Utils/CreateToken.js";
 import { sendError, sendResponse } from "../Utils/Response.js";
-
+import { DateTime } from "luxon";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 export const handleLogin = async (req, res) => {
@@ -118,7 +118,13 @@ export const Session = async (req, res) => {
       return sendResponse(res, 409, "Silahkan login terlebih dahulu");
     }
 
-    sendResponse(res, 200, "Success", findUser);
+    // Ambil waktu saat ini di zona waktu Indonesia (WIB)
+    const nowInIndonesia = DateTime.now().setZone("Asia/Jakarta").toISO(); // ISO string atau .toFormat("yyyy-MM-dd HH:mm:ss")
+
+    return sendResponse(res, 200, "Success", {
+      ...findUser,
+      currentDateTime: nowInIndonesia,
+    });
   } catch (error) {
     const findUsers = await prisma.admin.findFirst({
       where: { token },
@@ -126,9 +132,11 @@ export const Session = async (req, res) => {
         id: true,
       },
     });
+
     if (!findUsers) {
       return sendResponse(res, 409, "Silahkan login terlebih dahulu");
     }
+
     if (error instanceof jwt.TokenExpiredError) {
       await prisma.admin.update({
         where: { id: findUsers.id },
@@ -136,6 +144,7 @@ export const Session = async (req, res) => {
       });
       return sendResponse(res, 409, "Token telah kedaluwarsa");
     }
+
     if (error instanceof jwt.JsonWebTokenError) {
       await prisma.admin.update({
         where: { id: findUsers.id },
@@ -143,9 +152,14 @@ export const Session = async (req, res) => {
       });
       return sendResponse(res, 409, "Token tidak valid atau format salah");
     }
+
     return sendError(res, error);
   }
 };
+
+
+
+
 
 export const Logout = async (req, res) => {
   const { token } = req.body;
@@ -160,9 +174,9 @@ export const Logout = async (req, res) => {
     if (!findUser) {
       return sendResponse(res, 409, "Silahkan login terlebih dahulu");
     }
-    await prisma.user.update({
+    await prisma.admin.update({
       where: { id: findUser.id },
-      data: { status_login: false, token: null },
+      data: { status_login : false, token: null },
     });
     sendResponse(res, 200, "Logout berhasil");
   } catch (error) {
@@ -203,3 +217,5 @@ export const getUser = async (req, res) => {
     sendError(res, error, 500);
   }
 };
+
+
