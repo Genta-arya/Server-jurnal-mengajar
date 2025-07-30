@@ -202,12 +202,18 @@ export const getUser = async (req, res) => {
         nama_kelas: "asc", // urut berdasarkan nama, dari A-Z
       },
     });
+    const kegiatan = await prisma.kegiatan.findMany({
+      orderBy: {
+        nama_kegiatan: "asc", // urut berdasarkan nama, dari A-Z
+      },
+    })
     const web = await prisma.headerweb.findMany();
 
     const data = {
       web: web,
       mapel: mapel,
       kelas: kelas,
+      kegiatan: kegiatan,
       user: user,
     };
 
