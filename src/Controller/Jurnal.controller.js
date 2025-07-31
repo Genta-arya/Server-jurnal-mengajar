@@ -76,7 +76,51 @@ export const GetJournalByDate = async (req, res) => {
     sendError(res, error);
   }
 };
+export const GetJournalByYear = async (req, res) => {
+  const { year } = req.body;
 
+  if (!year) {
+    return sendError(res, "Tahun wajib diisi", 400);
+  }
+
+  try {
+    const startOfYear = DateTime.fromObject({
+      year: parseInt(year),
+      month: 1,
+      day: 1,
+    })
+      .startOf("day")
+      .toUTC()
+      .toJSDate();
+
+    const endOfYear = DateTime.fromObject({
+      year: parseInt(year),
+      month: 12,
+      day: 31,
+    })
+      .endOf("day")
+      .toUTC()
+      .toJSDate();
+
+    const findData = await prisma.jurnal.findMany({
+      where: {
+        tanggalMengajar: {
+          gte: startOfYear,
+          lte: endOfYear,
+        },
+      },
+      orderBy: {
+        tanggalMengajar: "desc",
+      },
+    });
+    
+
+    sendResponse(res, 200, "Success", findData);
+  } catch (error) {
+    console.log(error);
+    sendError(res, error);
+  }
+};
 export const getJournalById = async (req, res) => {
   const { id } = req.params;
   const { year } = req.query;
