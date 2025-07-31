@@ -58,12 +58,8 @@ export const GetJournalByDate = async (req, res) => {
   }
 
   try {
-    const startOfDay = DateTime.fromFormat(date, "dd-MM-yyyy")
-      .startOf("day")
-      .toJSDate();
-    const endOfDay = DateTime.fromFormat(date, "dd-MM-yyyy")
-      .endOf("day")
-      .toJSDate();
+    const startOfDay = DateTime.fromISO(date).startOf("day").toUTC().toJSDate();
+    const endOfDay = DateTime.fromISO(date).endOf("day").toUTC().toJSDate();
 
     const findData = await prisma.jurnal.findMany({
       where: {
